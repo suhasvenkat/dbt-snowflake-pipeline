@@ -1,0 +1,35 @@
+name: 'dbt_snowflake_pipeline'
+version: '1.0.0'
+config-version: 2
+
+profile: 'dbt_snowflake_pipeline'
+
+model-paths: ["models"]
+snapshot-paths: ["snapshots"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+
+target-path: "target"
+clean-targets: ["target", "dbt_packages"]
+
+models:
+  dbt_snowflake_pipeline:
+    bronze:
+      +materialized: view
+      +schema: bronze
+    silver:
+      +materialized: table
+      +schema: silver
+    gold:
+      +materialized: table
+      +schema: gold
+      fct_revenue:
+        +materialized: incremental
+        +unique_key: order_id
+
+snapshots:
+  dbt_snowflake_pipeline:
+    +target_schema: snapshots
+    +strategy: timestamp
+    +updated_at: updated_at
